@@ -1,0 +1,140 @@
+services:
+
+  # Security Services
+  vault: # Vault
+    profiles:
+      - default    
+      - security
+    container_name: vault
+    hostname: vault
+    build:
+      context: ./vault
+      dockerfile: Dockerfile
+    env_file:
+      - ./vault/.env
+    labels:
+      - "category=security"
+    volumes:
+      - ./vault/vault-config.hcl:/vault/config/vault.hcl
+      - vault_data:/vault/data  # For data persistence
+    networks:
+      vault_ctf:
+        aliases:
+          - vault
+    ports:
+      - "8200:8200" # Vault UI/API
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8200/v1/sys/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # NoSQL Services
+  nosql: # Couchbase
+    profiles:
+      - default        
+      - database
+    container_name: nosql
+    hostname: nosql
+    build:
+      context: ./nosql
+      dockerfile: Dockerfile
+    labels:
+      - "category=nosql"
+    volumes:
+      - nosql_data:/opt/couchbase/var # Persistent Couchbase storage
+    networks:
+      vault_ctf:
+        aliases:
+          - couchbase
+    ports:
+      - "8091:8091"   # Management Port
+      - "8092:8092"   # Internal Cluster Manager Port
+      - "8093:8093"   # Query Service Port
+      - "8094:8094"   # Full Text Search (FTS) Port
+      - "8095:8095"   # Analytics Service Port
+      - "8096:8096"   # Eventing Service Port
+      - "8097:8097"   # Backup Service Port
+      - "9102:9102"   # Index Service Port
+      - "11210:11210" # Data Service Port
+      - "11211:11211" # Memcached Data Service Port
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8091/ui/index.html"]
+      interval: 10s
+      timeout: 5s
+      retries: 5      
+
+  # Backend Services
+  backend: # Express Backend
+    profiles:
+      - default
+      - backend
+    container_name: backend
+    hostname: backend
+    env_file:
+      - ./backend/.env
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    labels:
+      - "category=backend"
+    networks:
+      couchbase_bakeray:
+        aliases:
+          - backend
+    ports:
+      - "3000:3000" # Backend API
+    depends_on:
+      - nosql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3      
+
+  # Frontend Services
+  frontend: # Nuxt Frontend
+    profiles:
+      - default
+      - frontend
+    container_name: frontend
+    hostname: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    labels:
+      - "category=frontend"
+    volumes:
+      - frontend_logs:/app/logs            # Persistent frontend logs
+      - ./frontend/cache:/app/.nuxt/cache  # Persistent Nuxt cache
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8075
+    networks:
+      vault_ctf:
+        aliases:
+          - frontend
+    ports:
+      - "8075:8075" # Frontend UI
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  vault_ctf:
+    name: vault_ctf
+    driver: bridge
+    
+volumes:
+  vault_logs:
+    driver: local
+  nosql_data:
+    driver: local
+  frontend_logs:
+    driver: local
