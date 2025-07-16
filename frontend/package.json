@@ -1,0 +1,29 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.6.0",
+    "@nuxtjs/tailwindcss": "^6.12.2",
+    "@pinia/nuxt": "^0.7.0",
+    "@tailwindcss/typography": "^0.5.15",
+    "autoprefixer": "^10.4.20",
+    "chart.js": "^4.4.6",
+    "fortawesome": "^0.0.1-security",
+    "jwt-decode": "^4.0.0",
+    "nuxt": "^3.14.159",
+    "pinia": "^2.2.6",
+    "plotly.js": "^2.35.2",
+    "plotly.js-dist": "^2.35.2",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.14",
+    "vue-cookies": "^1.8.4"
+  }
+}
