@@ -1,4 +1,4 @@
-FROM hashicorp/vault:1.18.2
+FROM hashicorp/vault:1.20
 
 # Set Vault's working directory
 WORKDIR /app

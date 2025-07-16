@@ -134,6 +134,8 @@ networks:
 volumes:
   vault_logs:
     driver: local
+  vault_data:
+    driver: local
   nosql_data:
     driver: local
   frontend_logs:

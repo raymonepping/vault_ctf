@@ -1,4 +1,4 @@
-FROM couchbase:enterprise-7.6.3
+FROM couchbase:enterprise-7.6.6
 
 # Set the working directory
 WORKDIR /opt/couchbase
