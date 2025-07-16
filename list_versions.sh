@@ -31,7 +31,21 @@ couchbase_version=$(curl -s "https://hub.docker.com/v2/repositories/couchbase/se
   | sort -Vr \
   | head -n 1)
 
-vault_version=$(fetch_latest_version "hashicorp/vault")
+# Function to check if a command exists and extract only the version
+check_command() {
+    if command -v "$1" >/dev/null 2>&1; then
+        case "$1" in
+            vault)    "$1" version | awk '{print $1, $2}' ;;  # Extracts "Vault vX.X.X"
+            consul)   "$1" version | awk 'NR==1 {print $1, $2}' ;;  # Extracts "Consul vX.X.X"
+            waypoint) "$1" version | awk 'NR==1 {print $1, $2}' ;;  # Extracts "Waypoint vX.X.X"
+            docker)   "$1" --version | awk '{print $3}' ;;  # Extracts only the version number
+            *)        "$1" "$2" | head -n 1 ;;  # Default case for other tools
+        esac
+    else
+        echo "$1: Not Installed"
+    fi
+}
+
 
 node20_alpine_version=$(curl -s "https://hub.docker.com/v2/repositories/library/node/tags/?page_size=100" \
   | jq -r '.results[].name' \
@@ -46,10 +60,13 @@ traefik_version=$(fetch_latest_lts "library/traefik" '^[0-9]+\.[0-9]+\.[0-9]+$')
 
 # -- OUTPUT --
 echo "================================================================"
-echo "|                     VAULT & COUCHBASE                        |"
+echo "|                     HashiCorp                                |"
+echo "================================================================"
+printf "| %-40s | %-15s |\n" "Latest Vault version" "$(check_command vault)"
+echo "================================================================"
+echo "|                     Couchbase                                |"
 echo "================================================================"
 printf "| %-40s | %-15s |\n" "Latest Couchbase version" "$couchbase_version"
-printf "| %-40s | %-15s |\n" "Latest Vault version" "$vault_version"
 echo "================================================================"
 echo "|                      LTS VERSION LIST                        |"
 echo "================================================================"
