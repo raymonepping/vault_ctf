@@ -30,11 +30,10 @@ declare -a containers_info=()
 
 # Define the target container names
 target_containers=(
-  "butter"
-  "cherry"
-  "flour" 
-  "nutmeg"
-  "vanilla"
+  "backend"
+  "frontend" 
+  "nosql"
+  "vault"
   )
 
 # Loop through all containers (running and stopped)

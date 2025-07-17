@@ -1,9 +1,10 @@
+# --- Docker Compose file for Vault CTF environment
 services:
 
-  # Security Services
-  vault: # Vault
+  # --- Security Services ---
+  vault:  # --- Use latest Vault ---
     profiles:
-      - default    
+      - default
       - security
     container_name: vault
     hostname: vault
@@ -16,23 +17,23 @@ services:
       - "category=security"
     volumes:
       - ./vault/vault-config.hcl:/vault/config/vault.hcl
-      - vault_data:/vault/data  # For data persistence
+      - vault_data:/vault/data
     networks:
       vault_ctf:
         aliases:
           - vault
     ports:
-      - "8200:8200" # Vault UI/API
+      - "8200:8200"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8200/v1/sys/health"]
       interval: 10s
       timeout: 5s
       retries: 3
 
-  # NoSQL Services
-  nosql: # Couchbase
+  # --- NoSQL Services ---
+  nosql:  # --- Couchbase ---
     profiles:
-      - default        
+      - default
       - database
     container_name: nosql
     hostname: nosql
@@ -42,34 +43,33 @@ services:
     labels:
       - "category=nosql"
     volumes:
-      - nosql_data:/opt/couchbase/var # Persistent Couchbase storage
+      - nosql_data:/opt/couchbase/var
     networks:
       vault_ctf:
         aliases:
           - couchbase
     ports:
-      - "8091:8091"   # Management Port
-      - "8092:8092"   # Internal Cluster Manager Port
-      - "8093:8093"   # Query Service Port
-      - "8094:8094"   # Full Text Search (FTS) Port
-      - "8095:8095"   # Analytics Service Port
-      - "8096:8096"   # Eventing Service Port
-      - "8097:8097"   # Backup Service Port
-      - "9102:9102"   # Index Service Port
-      - "11210:11210" # Data Service Port
-      - "11211:11211" # Memcached Data Service Port
+      - "8091:8091"     # --- Management Port
+      - "8092:8092"     # --- Internal Cluster Manager Port
+      - "8093:8093"     # --- Query Service Port
+      - "8094:8094"     # --- Full Text Search (FTS) Port
+      - "8095:8095"     # --- Analytics Service Port
+      - "8096:8096"     # --- Eventing Service Port
+      - "8097:8097"     # --- Backup Service Port
+      - "9102:9102"     # --- Index Service Port
+      - "11210:11210"   # --- Data Service Port
+      - "11211:11211"   # --- Memcached Data Service Port
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8091/ui/index.html"]
       interval: 10s
       timeout: 5s
-      retries: 5      
+      retries: 5
 
-  # Backend Services
-  backend: # Express Backend
+  # --- Backend Services ---
+  backend:  # --- Express Backend ---
     profiles:
       - default
       - backend
-    platform: linux/amd64      
     container_name: backend
     hostname: backend
     env_file:
@@ -84,17 +84,17 @@ services:
         aliases:
           - backend
     ports:
-      - "3000:3000" # Backend API
+      - "3000:3000"
     depends_on:
       - nosql
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 10s
       timeout: 5s
-      retries: 3      
+      retries: 3
 
-  # Frontend Services
-  frontend: # Nuxt Frontend
+  # --- Frontend Services ---
+  frontend:  # --- Nuxt Frontend ---
     profiles:
       - default
       - frontend
@@ -106,8 +106,8 @@ services:
     labels:
       - "category=frontend"
     volumes:
-      - frontend_logs:/app/logs            # Persistent frontend logs
-      - ./frontend/cache:/app/.nuxt/cache  # Persistent Nuxt cache
+      - frontend_logs:/app/logs
+      - ./frontend/cache:/app/.nuxt/cache
       - ./frontend:/app
       - /app/node_modules
     environment:
@@ -118,7 +118,7 @@ services:
         aliases:
           - frontend
     ports:
-      - "8075:8075" # Frontend UI
+      - "8075:8075"
     depends_on:
       - backend
     healthcheck:
@@ -131,7 +131,7 @@ networks:
   vault_ctf:
     name: vault_ctf
     driver: bridge
-    
+
 volumes:
   vault_logs:
     driver: local
