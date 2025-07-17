@@ -48,7 +48,9 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 logger.info("Swagger UI available at /api-docs");
 
 // Define routes
-app.use(appRoutes);
+// app.use(appRoutes);
+app.use("/", appRoutes); // Mount routes at root level
+
 logger.debug("API routes mounted at /api");
 
 // Establish Couchbase connection

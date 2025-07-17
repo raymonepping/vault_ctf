@@ -1,11 +1,5 @@
-# --- Docker Compose file for Vault CTF environment
-services:
-
-  # --- Security Services ---
-  vault:  # --- Use latest Vault ---
-    profiles:
-      - default
-      - security
+services: 
+  vault:
     container_name: vault
     hostname: vault
     build:
@@ -32,17 +26,17 @@ services:
 
   # --- NoSQL Services ---
   nosql:  # --- Couchbase ---
-    profiles:
-      - default
-      - database
     container_name: nosql
     hostname: nosql
+    entrypoint: ["/app/entrypoint.sh"]
+    command: ["couchbase-server"]
     build:
       context: ./nosql
       dockerfile: Dockerfile
     labels:
       - "category=nosql"
     volumes:
+      - ./nosql/entrypoint.sh:/app/entrypoint.sh
       - nosql_data:/opt/couchbase/var
     networks:
       vault_ctf:
@@ -59,6 +53,9 @@ services:
       - "9102:9102"     # --- Index Service Port
       - "11210:11210"   # --- Data Service Port
       - "11211:11211"   # --- Memcached Data Service Port
+    depends_on:
+      vault:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8091/ui/index.html"]
       interval: 10s
@@ -67,9 +64,6 @@ services:
 
   # --- Backend Services ---
   backend:  # --- Express Backend ---
-    profiles:
-      - default
-      - backend
     container_name: backend
     hostname: backend
     env_file:
@@ -77,6 +71,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    entrypoint: ["/app/entrypoint.sh"]
+    volumes:
+      - ./backend/entrypoint.sh:/app/entrypoint.sh      
     labels:
       - "category=backend"
     networks:
@@ -95,9 +92,6 @@ services:
 
   # --- Frontend Services ---
   frontend:  # --- Nuxt Frontend ---
-    profiles:
-      - default
-      - frontend
     container_name: frontend
     hostname: frontend
     build:
