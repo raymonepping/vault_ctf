@@ -1,42 +1,66 @@
 const couchbase = require('couchbase');
-const vaultService = require('./vault');
-const logger = require("../configurations/logger");
+const logger = require('../configurations/logger');
+require('dotenv').config();
 
 let cluster = null;
-let bucketInstance = null;
+let bucket = null;
 
-async function fetchCouchbaseCredentials() {
-  const path = 'database/creds/readwrite'; // Vault path for credentials
-  return await vaultService.fetchDynamicCredentials(path);
-}
+// Fetch credentials and connection info from environment variables
+const clusterConnStr = process.env.COUCHBASE_URL || 'couchbase://localhost';
+const username = process.env.COUCHBASE_USERNAME || 'Administrator';
+const password = process.env.COUCHBASE_PASSWORD || '';
+const bucketName = process.env.COUCHBASE_BUCKET || 'demo';
 
+// Initialize Couchbase connection
 async function initializeCouchbaseConnection() {
   try {
-    logger.info('Initializing Couchbase connection...');
+    logger.info('Initializing new Couchbase connection...');
+    
+    // Connect to the Couchbase cluster
+    cluster = await couchbase.connect(clusterConnStr, {
+      username,
+      password,
+      configProfile: process.env.COUCHBASE_CONFIG_PROFILE || 'wanDevelopment',
+    });
 
-    const connectionString = 'couchbase://cb-example.default.svc.cluster.local';
-    const bucketName = 'demo'; // Static bucket name
-    const { username, password } = await fetchCouchbaseCredentials();
-
-    cluster = await couchbase.connect(connectionString, { username, password });
-    bucketInstance = cluster.bucket(bucketName);
-
+    // Open the specified bucket
+    bucket = cluster.bucket(bucketName);
     logger.info(`Connected to Couchbase bucket: ${bucketName}`);
-    return { cluster, bucketInstance };
+
+    return { cluster, bucket };
   } catch (err) {
     logger.error('Error initializing Couchbase connection:', err.message);
     throw err;
   }
 }
 
+// Get Couchbase connection
 async function getConnection() {
-  if (cluster && bucketInstance) {
+  if (cluster && bucket) {
     logger.debug('Reusing existing Couchbase connection...');
-    return { cluster, bucket: bucketInstance, scope: 'baking', collection: 'ingredients' };
+    return { cluster, bucket };
   }
   return initializeCouchbaseConnection();
 }
 
+// Get Couchbase collection
+async function getClusterCollection(collectionName, scopeName) {
+  try {
+    const { bucket } = await getConnection();
+    const scope = bucket.scope(scopeName || process.env.COUCHBASE_SCOPE || '_default');
+    const collection = scope.collection(collectionName || process.env.COUCHBASE_COLLECTION || '_default');
+
+    logger.debug(`Connected to bucket: ${bucket.name}, scope: ${scope.name}, collection: ${collection.name}`);
+    return { cluster, collection };
+  } catch (err) {
+    logger.error('Error fetching cluster collection:', err.message);
+    throw err;
+  }
+}
+
+
+
 module.exports = {
   getConnection,
+  getClusterCollection,
 };

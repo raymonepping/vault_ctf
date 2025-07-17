@@ -69,6 +69,7 @@ services:
     profiles:
       - default
       - backend
+    platform: linux/amd64      
     container_name: backend
     hostname: backend
     env_file:
@@ -79,7 +80,7 @@ services:
     labels:
       - "category=backend"
     networks:
-      couchbase_bakeray:
+      vault_ctf:
         aliases:
           - backend
     ports:

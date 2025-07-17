@@ -1,14 +1,12 @@
-// routes/index.js
-const express = require("express");
-const router = express.Router();
+const express = require('express');
+const router = express.Router()
 
-const bakingRoutes = require("./bakingRoutes");
-const gameRoutes = require("./gameRoutes");
+// Import route modules
+const healthRoutes = require('./health')
+const pingRoutes = require('./ping')
 
-// Use baking routes
-app.use("/api/baking", bakingRoutes);
+// Use the route modules
+router.use('/health', healthRoutes)
+router.use('/ping', pingRoutes)
 
-// Use gaming routes
-router.use("/api/gaming", gameRoutes);
-
-module.exports = router;
+module.exports = router

@@ -1,88 +1,68 @@
-const express = require('express');
-const fs = require('fs');
-const process = require('process');
+require("dotenv").config(); // Load environment variables
 
-// Create an Express app
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
+
+const { getConnection } = require('./services/couchbasePool'); // Import Couchbase connection
+const httpLogger = require("./configurations/morganLogger");
+const logger = require("./configurations/logger"); // Import Winston logger
+
+const appRoutes = require("./appRoutes");
+
+// Swagger imports
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocs = require("./configurations/swaggerOptions");
+
 const app = express();
+const port = process.env.PORT || 3000;
 
-// Port setup
-const PORT = process.env.PORT || 3000;
+// Serve custom CSS located in the configurations folder
+app.use(
+  "/swagger-custom.css",
+  express.static(path.join(__dirname, "configurations", "swagger-custom.css"))
+);
 
-// Paths to secrets
-const STATIC_SECRET_FILE = '/vault/secrets/secretfile';
-const COUCHBASE_CREDS_FILE = '/vault/secrets/couchbase-creds';
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocs, {
+    customCssUrl: "/swagger-custom.css",
+  })
+);
 
-// Initialize secrets objects
-let staticSecrets = {};
-let couchbaseCredentials = {};
+// Enable CORS
+app.use(cors());
 
-// Function to load static secrets (Option A)
-const loadStaticSecrets = () => {
-  try {
-    const data = fs.readFileSync(STATIC_SECRET_FILE, 'utf8');
-    staticSecrets = data.split('\n').reduce((acc, line) => {
-      const [key, value] = line.split(':');
-      if (key && value) {
-        acc[key.trim()] = value.trim();
-      }
-      return acc;
-    }, {});
-    console.log('Loaded static secrets:', staticSecrets);
-  } catch (error) {
-    console.error('Error reading static secrets:', error.message);
-  }
-};
+// Use the custom Morgan HTTP logger
+app.use(httpLogger);
 
-// Function to load Couchbase credentials (Option B)
-const loadCouchbaseCredentials = () => {
-  try {
-    const data = fs.readFileSync(COUCHBASE_CREDS_FILE, 'utf8');
-    const lines = data.split('\n');
-    const creds = lines.reduce((acc, line) => {
-      const [key, value] = line.split(':');
-      if (key && value) {
-        acc[key.trim()] = value.trim();
-      }
-      return acc;
-    }, {});
-    couchbaseCredentials = creds;
-    console.log('Loaded Couchbase credentials:', couchbaseCredentials);
-  } catch (error) {
-    console.error('Error reading Couchbase credentials:', error.message);
-  }
-};
+// Parse incoming requests as JSON
+app.use(express.json());
 
-// Initial load
-loadStaticSecrets();
-loadCouchbaseCredentials();
+// Debug log the value of LOG_LEVEL from the .env file
+logger.info(`Current LOG_LEVEL from .env is: ${process.env.LOG_LEVEL}`);
 
-// Handle SIGHUP signal for reloading secrets
-process.on('SIGHUP', () => {
-  console.log('Received SIGHUP signal. Reloading secrets...');
-  loadStaticSecrets();
-  loadCouchbaseCredentials();
-  // Implement logic to re-establish connections if necessary
-});
+// Swagger UI setup
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+logger.info("Swagger UI available at /api-docs");
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'Minimal Butter app is running with Vault!' });
-});
+// Define routes
+app.use(appRoutes);
+logger.debug("API routes mounted at /api");
 
-// Endpoint to demonstrate using Couchbase credentials
-app.get('/connect-couchbase', (req, res) => {
-  if (couchbaseCredentials.username && couchbaseCredentials.password) {
-    // Here you would use `couchbaseCredentials.username` and `couchbaseCredentials.password` to connect to Couchbase
-    res.status(200).json({
-      status: 'Connected to Couchbase',
-      credentials: couchbaseCredentials,
+// Establish Couchbase connection
+getConnection()
+  .then(() => {
+    logger.info("Connected to Couchbase successfully");
+
+    // Start the server and log it using Winston
+    app.listen(port, () => {
+      logger.info(`Backend service running on port ${port}`);
     });
-  } else {
-    res.status(500).json({ status: 'Error', message: 'Couchbase credentials not available' });
-  }
-});
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+  })
+  .catch((err) => {
+    logger.error("Failed to connect to Couchbase. Exiting...");
+    logger.error(err.message);
+    process.exit(1); // Exit the application if Couchbase connection fails
+  });

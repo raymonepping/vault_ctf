@@ -1,21 +1,23 @@
-# Use the official Node.js image as the base image
-FROM node:20.19.4
+# Use the official Node.js image (latest LTS 20.x)
+FROM node:20.19.4-alpine
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy the package.json and package-lock.json
+# Copy package manifests
 COPY package*.json ./
 
-# Force install all dependencies (including devDependencies)
+# Install dependencies (use legacy-peer-deps if needed for Tailwind/Vite conflicts)
 RUN npm install --legacy-peer-deps
-# RUN npm install 
 
-# Copy the rest of the application code
+# Copy all app files
 COPY . .
 
-# Expose the port the app runs on
+# Expose Nuxt default port
 EXPOSE 8075
 
-# Start the application in production mode
+# Prevent CLI prompt in Docker
+ENV NUXT_CLI_DISABLE_PROMPT=true
+
+# Start Nuxt in dev mode (adjust for prod as needed)
 CMD ["npm", "run", "dev"]

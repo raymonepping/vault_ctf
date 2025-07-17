@@ -1,7 +1,8 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
-  plugins: ['~/plugins/auth-init.js'],
+  // plugins: ['~/plugins/auth-init.js'],
+  modules: ['@nuxt/image-edge'],
   devServer: {
     port: 8075,
     host: '0.0.0.0',
@@ -9,7 +10,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Flour', // Default title for all pages
+      title: 'frontend', // Default title for all pages
       htmlAttrs: {
         lang: 'en',
       },
@@ -24,7 +25,7 @@ export default defineNuxtConfig({
         { 
           rel: 'stylesheet', 
           href: 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&display=swap' 
-        } // Import Dancing Script font
+        } 
       ],
     },
   },
@@ -32,6 +33,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
+    '@nuxt/image-edge',
   ],
 
   tailwindcss: {
@@ -47,13 +49,13 @@ export default defineNuxtConfig({
 
   router: {
     middleware: ['auth'], // Apply the auth middleware globally
-  },  
+  },
 
   // Use Nitro's 'routeRules' to set up the proxy instead
   nitro: {
     routeRules: {
       '/api/**': {
-        proxy: 'http://butter:3000/api/**',
+        proxy: 'http://backend:3000/api/**',
       },
     },
   },
