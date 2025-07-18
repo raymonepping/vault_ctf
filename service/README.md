@@ -8,14 +8,17 @@
 ---
 ## 🧭 What Is This?
 
-data_scrub.sh is a Homebrew-installable CLI that orchestrates **before/after state resets**, validation, and integrity checks for each challenge level in the *Vault Capture-The-Flag (CTF)* game.
+data_scrub.sh is part of the Vault Radar CTF — a DevSecOps-style Capture-The-Flag game that challenges players to detect, fix, and secure real-world secrets in code.
 
 Built for DevSecOps-style learning, it helps you:
 
-- Revert or apply level-specific file changes
-- Validate challenge progress and Vault integration
-- Generate templated README docs per level
-- Run full CTF resets safely and modularly
+- 🎮 Progress through levels by fixing unsafe code
+- ♻️ Revert or apply before/after states per challenge
+- ✅ Validate if your fix is correct (and Vault-compliant)
+- 📄 Generate level-specific documentation templates
+- 🔐 Practice secure secret management using HashiCorp Vault
+
+It's your automation sidekick for leveling up — without manually resetting files, guessing what changed, or breaking the flow.
 
 ---
 
