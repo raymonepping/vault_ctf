@@ -1,5 +1,3 @@
-const apiKey = process.env.VAULT_API_KEY; // ✅ GOOD (use environment variable)
-
 module.exports = {
   connectionString: process.env.COUCHBASE_CONNSTR || 'couchbase://localhost',
   username: process.env.COUCHBASE_USERNAME || 'Administrator',

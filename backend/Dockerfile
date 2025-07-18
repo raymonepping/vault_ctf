@@ -22,3 +22,4 @@ EXPOSE 3000
 # CMD ["npm", "start"]
 # Entrypoint that waits for Couchbase before launching
 CMD ["./entrypoint.sh"]
+# CMD ["npx", "nodemon", "index.js"]

@@ -8,6 +8,7 @@ lerna-debug.log*
 ctf_project.md
 .ctf_project.md
 .yamllint
+readme_*.tpl
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

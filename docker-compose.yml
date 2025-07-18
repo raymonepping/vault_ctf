@@ -73,7 +73,8 @@ services:
       dockerfile: Dockerfile
     entrypoint: ["/app/entrypoint.sh"]
     volumes:
-      - ./backend/entrypoint.sh:/app/entrypoint.sh      
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
     labels:
       - "category=backend"
     networks:
@@ -134,4 +135,6 @@ volumes:
   nosql_data:
     driver: local
   frontend_logs:
+    driver: local
+  backend_node_modules:
     driver: local

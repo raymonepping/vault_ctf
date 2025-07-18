@@ -9,7 +9,7 @@ let bucket = null;
 const clusterConnStr = process.env.COUCHBASE_URL || 'couchbase://localhost';
 const username = process.env.COUCHBASE_USERNAME || 'Administrator';
 const password = process.env.COUCHBASE_PASSWORD || '';
-const bucketName = process.env.COUCHBASE_BUCKET || 'demo';
+const bucketName = process.env.COUCHBASE_BUCKET || 'game_users';
 
 // Initialize Couchbase connection
 async function initializeCouchbaseConnection() {
@@ -57,8 +57,6 @@ async function getClusterCollection(collectionName, scopeName) {
     throw err;
   }
 }
-
-
 
 module.exports = {
   getConnection,

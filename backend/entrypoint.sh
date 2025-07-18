@@ -15,3 +15,4 @@ done
 log "✅ Couchbase is healthy. Starting backend..."
 
 exec npm start
+# exec npx nodemon index.js
