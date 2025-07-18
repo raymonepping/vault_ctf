@@ -1,12 +1,11 @@
-# data_scrub.sh 🌳
+# 🛡️ - HashiCorp Vault - Capture the Flag
 
 > "Structure isn't boring – it's your first line of clarity." — *You (probably during a cleanup)*
 
-[![Install with Homebrew](https://img.shields.io/badge/brew--install-success-green?logo=homebrew)](https://github.com/raymonepping/homebrew-data_scrub.sh)
-[![Version](https://img.shields.io/badge/version-1.1.0-blue)](https://github.com/raymonepping/homebrew-data_scrub.sh)
+[![brew install](https://img.shields.io/badge/brew--install-success-green?logo=homebrew)](https://github.com/raymonepping/homebrew-data_scrub.sh)
+[![version](https://img.shields.io/badge/version-1.1.0-blue)](https://github.com/raymonepping/homebrew-data_scrub.sh)
 
 ---
-
 ## 🧭 What Is This?
 
 data_scrub.sh is a Homebrew-installable CLI that orchestrates **before/after state resets**, validation, and integrity checks for each challenge level in the *Vault Capture-The-Flag (CTF)* game.
