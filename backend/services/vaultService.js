@@ -2,8 +2,8 @@
 const vault = require('node-vault')
 const logger = require('../configurations/logger')
 
-const VAULT_ADDR = process.env.VAULT_ADDR || 'http://127.0.0.1:8200'
-const VAULT_TOKEN = process.env.VAULT_TOKEN || 'hvs.I9qAQFf4ZhlWKBB6Vi6Sr3OL'
+const VAULT_ADDR = process.env.VAULT_ADDR
+const VAULT_TOKEN = process.env.VAULT_TOKEN
 
 const vaultClient = vault({
   endpoint: VAULT_ADDR,
