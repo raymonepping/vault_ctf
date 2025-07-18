@@ -1,7 +1,8 @@
 const { getClusterCollection } = require('../services/couchbasePool');
 const fs = require('fs');
 const path = require('path');
-const { loadConfig } = require('../utilities/configLoader'); // NEW
+
+const { loadConfig } = require('../utilities/configLoader'); 
 
 const validateLevel = async (req, res) => {
   try {
@@ -15,6 +16,7 @@ const validateLevel = async (req, res) => {
     const player = getResult.content;
     console.log(`[VALIDATOR] Loaded player doc:`, player);
 
+    // 🛡️ Defender of the Gate
     if (level === 1) {
       const codePath = path.join(__dirname, '../configurations/couchbaseConfig.js');
       console.log(`[VALIDATOR] Reading code from: ${codePath}`);
@@ -44,23 +46,31 @@ const validateLevel = async (req, res) => {
       return res.json({ success: true, message: 'Level 1 complete!', player });
     }
 
-    // 🔒 Example future level (dynamic config check)
+    // ✨ Enabler of Engines
     if (level === 2) {
-      const config = loadConfig('../configurations/couchbaseConfig.js');
-      if (!config || !config.password) {
-        return res.json({ success: false, message: 'Missing or invalid password in config.' });
-      }
+    const codePath = path.join(__dirname, '../services/couchbasePool.js')
+    const rawCode = fs.readFileSync(codePath, 'utf8')
 
-      if (config.password !== process.env.CORRECT_PASSWORD) {
-        return res.json({ success: false, message: 'Incorrect password.' });
-      }
+    const hasVaultImport = /require\(['"`]\.\/vaultService['"`]\)/.test(rawCode)
+    const hasVaultURL = /vaultConfig\s*\.\s*url/.test(rawCode)
+    const hasVaultUsername = /vaultConfig\s*\.\s*username/.test(rawCode)
+    const hasVaultPassword = /vaultConfig\s*\.\s*password/.test(rawCode)
 
-      player.currentLevel = 3;
-      player.levelsCompleted.push(2);
-      await collection.upsert(username, player);
-      console.log(`[VALIDATOR] PASS: Level 2 complete!`);
 
-      return res.json({ success: true, message: 'Level 2 complete!', player });
+    if (!hasVaultImport || !hasVaultURL || !hasVaultUsername || !hasVaultPassword) {
+        console.log('[VALIDATOR] FAIL: Vault config not properly used in couchbasePool.js')
+        return res.json({
+        success: false,
+        message: 'couchbasePool.js must use vaultService for all Couchbase credentials.',
+        })
+    }
+
+    player.currentLevel = 3
+    player.levelsCompleted.push(2)
+    await collection.upsert(username, player)
+    console.log(`[VALIDATOR] PASS: Level 2 complete!`)
+
+    return res.json({ success: true, message: 'Level 2 complete!', player })
     }
 
     console.log(`[VALIDATOR] Unknown level: ${level}`);

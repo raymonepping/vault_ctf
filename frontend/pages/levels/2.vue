@@ -11,13 +11,17 @@
       <div v-if="backendHealthy" class="mb-4 p-2 rounded bg-green-100 text-green-700 text-sm font-bold">✔ Backend is healthy!</div>
       <div v-else-if="restarting" class="mb-4 p-2 rounded bg-yellow-100 text-yellow-800 text-sm font-bold">⏳ Restarting backend...</div>
 
-      <h2 class="text-2xl font-bold mb-4">Level 1: 🛡️ Defender of the Gate</h2>
-      <p class="mb-4 text-base">
-        🔐 There is a hardcoded API key in the backend code.<br>
-        <span class="text-gray-600">
-          Find and remove it, update the code to fetch the secret from Vault, then click Validate!
-        </span>
-      </p>
+<h2 class="text-2xl font-extrabold mb-4 text-gray-800">Level 2: ✨ Enabler of Engines</h2>
+<div class="mb-6 text-base leading-relaxed space-y-2 text-gray-700">
+  <p>🔧 <span class="font-semibold">The Couchbase connection details are still hardcoded in the backend.</span></p>
+  <p>💡 Update the backend to securely fetch the <code class="font-mono bg-gray-100 px-1 rounded">URL</code>, 
+    <code class="font-mono bg-gray-100 px-1 rounded">username</code>, and 
+    <code class="font-mono bg-gray-100 px-1 rounded">password</code> from <span class="font-semibold">Vault</span>.
+    Remove any hardcoded or environment-based fallbacks.
+  </p>
+  <p class="text-sm text-gray-600">✅ Once updated, rebuild and click <strong>Validate</strong> to proceed!</p>
+</div>
+
 
       <div class="mb-2">Current Player: <span class="font-mono">{{ player?.username }}</span></div>
       <div class="mb-2">Current Level: <span class="font-mono">{{ player?.currentLevel }}</span></div>
@@ -157,13 +161,13 @@ const validateLevel = async () => {
     const username = player.value.username
     const res = await $fetch('/api/validate', {
       method: 'POST',
-      body: { username, level: 1 }
+      body: { username, level: 2 }
     })
     if (res.success) {
-      message.value = 'Level 1 complete! 🎉 Proceeding to Level 2...'
+      message.value = 'Level 2 complete! 🎉 Proceeding to Level 3...'
       validationStatus.value = 'success'
       setTimeout(() => {
-        router.push('/levels/2')
+        router.push('/levels/3')
       }, 1500)
     } else {
       error.value = res.message || 'Validation failed.'

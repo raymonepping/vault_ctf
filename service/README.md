@@ -53,7 +53,8 @@ export VAULT_CTF_HOME=/opt/homebrew/opt/data_scrub.sh/share/data_scrub.sh
 ├── Formula/
 ├── lib/
 │   ├── level_01.sh*
-│   ├── level_02.sh*
+│   ├── level_02.md*
+│   ├── level_02.sh
 │   ├── level_03.sh*
 │   ├── level_04.sh*
 │   ├── level_05.sh*
@@ -75,7 +76,7 @@ export VAULT_CTF_HOME=/opt/homebrew/opt/data_scrub.sh/share/data_scrub.sh
 ├── README.md
 └── restart-api.js
 
-5 directories, 22 files
+5 directories, 23 files
 ```
 
 ---

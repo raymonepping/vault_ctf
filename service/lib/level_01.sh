@@ -8,6 +8,14 @@ TARGET_FILE="${BASE_DIR}/backend/configurations/couchbaseConfig.js"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TPL_DIR="${SCRIPT_DIR}/../tpl"
 
+run_prettier_if_available() {
+  if command -v npx >/dev/null && npx prettier --version >/dev/null 2>&1; then
+    echo "[FORMAT] Running Prettier on $TARGET_FILE..."
+    npx prettier --write "$TARGET_FILE" >/dev/null
+  else
+    echo "[FORMAT] Skipped: Prettier not found."
+  fi
+}
 
 before() {
   echo "[RESET] Reverting ${LEVEL_NAME} to BEFORE state..."
@@ -18,6 +26,9 @@ before() {
     }
     { print }
   ' "$TARGET_FILE" > "${TARGET_FILE}.tmp" && mv "${TARGET_FILE}.tmp" "$TARGET_FILE"
+
+  run_prettier_if_available
+
 }
 
 after() {
@@ -29,6 +40,9 @@ after() {
     }
     { print }
   ' "$TARGET_FILE" > "${TARGET_FILE}.tmp" && mv "${TARGET_FILE}.tmp" "$TARGET_FILE"
+
+  run_prettier_if_available
+    
 }
 
 status() {

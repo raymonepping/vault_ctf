@@ -11,7 +11,7 @@
       <div v-if="backendHealthy" class="mb-4 p-2 rounded bg-green-100 text-green-700 text-sm font-bold">✔ Backend is healthy!</div>
       <div v-else-if="restarting" class="mb-4 p-2 rounded bg-yellow-100 text-yellow-800 text-sm font-bold">⏳ Restarting backend...</div>
 
-      <h2 class="text-2xl font-bold mb-4">Level 1: 🛡️ Defender of the Gate</h2>
+      <h2 class="text-2xl font-bold mb-4">Level 7: 🧱 Warden of Permissions</h2>
       <p class="mb-4 text-base">
         🔐 There is a hardcoded API key in the backend code.<br>
         <span class="text-gray-600">
@@ -157,13 +157,13 @@ const validateLevel = async () => {
     const username = player.value.username
     const res = await $fetch('/api/validate', {
       method: 'POST',
-      body: { username, level: 1 }
+      body: { username, level: 7 }
     })
     if (res.success) {
-      message.value = 'Level 1 complete! 🎉 Proceeding to Level 2...'
+      message.value = 'Level 7 complete! 🎉 Proceeding to Level 8...'
       validationStatus.value = 'success'
       setTimeout(() => {
-        router.push('/levels/2')
+        router.push('/levels/8')
       }, 1500)
     } else {
       error.value = res.message || 'Validation failed.'

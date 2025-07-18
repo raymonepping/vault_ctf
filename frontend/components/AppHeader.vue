@@ -10,8 +10,7 @@
           alt="Vault Radar Logo"
           class="h-[1cm] w-auto max-h-24 mr-2"
         />
-        <span>Welcome to</span>
-        <span>Capture the Flag</span>
+        <span>Welcome to HashiCorp Vault - Capture the Flag</span>
       </div>
 
 
