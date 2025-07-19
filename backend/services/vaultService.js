@@ -10,6 +10,10 @@ const vaultClient = vault({
   token: VAULT_TOKEN,
 })
 
+// Vault service for centralized secret access
+// - getCouchbaseConfig(): returns Couchbase credentials from Vault
+// - getFlagSecret(): returns challenge flag value from Vault
+
 async function getCouchbaseConfig() {
   try {
     const result = await vaultClient.read('secret/ctf/data/config') // KV v2
@@ -32,4 +36,22 @@ async function getCouchbaseConfig() {
   }
 }
 
-module.exports = { getCouchbaseConfig }
+async function getFlagSecret() {
+  try {
+    const result = await vaultClient.read('secret/ctf'); // KV v1 or v2 (adjust if needed)
+    const flag = result?.data?.data?.value || result?.data?.value;
+
+    logger.debug(`[VAULT] Retrieved flag from Vault: ${flag ? '[REDACTED]' : '(none found)'}`);
+
+    return flag;
+  } catch (err) {
+    logger.warn(`[VAULT] Could not read flag: ${err.message}`);
+    return null;
+  }
+}
+
+module.exports = {
+  getCouchbaseConfig,
+  getFlagSecret, 
+};
+
