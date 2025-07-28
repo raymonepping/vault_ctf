@@ -4,7 +4,7 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 
-const { getConnection } = require('./services/couchbasePool'); // Import Couchbase connection
+const { getConnection } = require("./services/couchbasePool"); // Import Couchbase connection
 const httpLogger = require("./configurations/morganLogger");
 const logger = require("./configurations/logger"); // Import Winston logger
 
@@ -20,7 +20,7 @@ const port = process.env.PORT || 3000;
 // Serve custom CSS located in the configurations folder
 app.use(
   "/swagger-custom.css",
-  express.static(path.join(__dirname, "configurations", "swagger-custom.css"))
+  express.static(path.join(__dirname, "configurations", "swagger-custom.css")),
 );
 
 app.use(
@@ -28,7 +28,7 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerDocs, {
     customCssUrl: "/swagger-custom.css",
-  })
+  }),
 );
 
 // Enable CORS

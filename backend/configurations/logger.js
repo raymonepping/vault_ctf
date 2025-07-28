@@ -7,8 +7,8 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 // Destructure necessary environment variables
-LOG_LEVEL = process.env.LOG_LEVEL
-CONTAINER_NAME = process.env.CONTAINER_NAME
+LOG_LEVEL = process.env.LOG_LEVEL;
+CONTAINER_NAME = process.env.CONTAINER_NAME;
 
 // Console transport with a clear timestamp format and container name
 const consoleTransport = new winston.transports.Console({
@@ -38,9 +38,7 @@ logger.debug(
   `Current log level is set to: ${LOG_LEVEL}, running in container: ${CONTAINER_NAME}`,
 );
 
-logger.debug(
-  "Initializing logger with console transport."
-);
+logger.debug("Initializing logger with console transport.");
 
 // Graceful shutdown handling for SIGTERM and SIGINT
 const handleShutdown = async (signal) => {
